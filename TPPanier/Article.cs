@@ -21,7 +21,14 @@ namespace TPPanier
 
         public int CompareTo(object? obj)
         {
-            return Reference.CompareTo(obj);
+            if (obj is Article article)
+            {
+                return Reference.CompareTo(article.Reference);
+            }
+            else
+            {
+                return 100;
+            }
         }
 
         public override bool Equals(object? obj)
