@@ -10,7 +10,8 @@ namespace TPPanier
     {
         public int Numero { get; private set; }
         public DateTime DateCreation { get; private set; } = DateTime.Now;
-        private List<LignePanier> Lignes { get; set; } = new List<LignePanier>();
+        //private List<LignePanier> Lignes { get; set; } = new List<LignePanier>();
+        private Dictionary<Article, LignePanier> Lignes = new Dictionary<Article, LignePanier>();
 
         private static int CompteurPaniers {get;set;}
 
