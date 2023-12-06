@@ -11,9 +11,9 @@ namespace TPPanier
         public int Numero { get; private set; }
         public DateTime DateCreation { get; private set; } = DateTime.Now;
         //private List<LignePanier> Lignes { get; set; } = new List<LignePanier>();
-        private Dictionary<Article, LignePanier> Lignes = new Dictionary<Article, LignePanier>();
+        private SortedDictionary<Article, LignePanier> Lignes = new SortedDictionary<Article, LignePanier>();
 
-        private static int CompteurPaniers {get;set;}
+        private static int CompteurPaniers { get; set; }
 
         public Panier()
         {
@@ -27,25 +27,23 @@ namespace TPPanier
 
             // 1er cas : l'article est déja présent dans le panier 
             // => on cumule les quantité
-            foreach (LignePanier ligne in Lignes)
+
+            if (Lignes.ContainsKey(article))
             {
-                if (ligne.Article.Equals(article))
-                {
-                    ligne.Quantite += quantite;
-                    return; // on sort de la méthode car on a pas besoin de faire quoi que ce soit d'autres
-                }
+                Lignes[article].Quantite += quantite;
+                return; // on sort de la méthode car on a pas besoin de faire quoi que ce soit d'autres
             }
+
             // 2eme cas : l'article n'est pas présent dans la liste
             // => création d'une ligne panier et ajout de cette dernière à la liste
-            LignePanier NewLigne = new LignePanier(article, quantite);
-            Lignes.Add(NewLigne);
+            Lignes.Add(article, new LignePanier(article, quantite));
         }
 
         public decimal Total()
         {
             // parcourir la liste de lignes et ajouter le montant de chacune d'entre elles
             decimal Total = 0;
-            foreach (LignePanier ligne in Lignes)
+            foreach (LignePanier ligne in Lignes.Values)
             {
                 Total += ligne.Montant();
             }
@@ -56,9 +54,9 @@ namespace TPPanier
         {
             // parcourir la liste de ligne et ajouter les quantite
             int Somme = 0;
-            foreach (LignePanier ligne in Lignes)
+            foreach (KeyValuePair<Article,LignePanier> kvp in Lignes)
             {
-                Somme += ligne.Quantite;
+                Somme += kvp.Value.Quantite;
             }
             return Somme;
         }
@@ -72,31 +70,18 @@ namespace TPPanier
         public void Afficher()
         {
             // trier la liste
-            Lignes.Sort();
             // afficher les lignes une par une
-            foreach (LignePanier ligne in Lignes)
+            foreach (KeyValuePair<Article, LignePanier> kvp in Lignes)
             {
-                Console.WriteLine(ligne);
+                Console.WriteLine(kvp.Value);
             }
         }
 
         public void SupprimerArticle(Article article)
         {
             // supprimer la lignePanier correspondante à l'article passé en paramètre
-            LignePanier ligneASupprimer = null;
-            foreach (LignePanier ligne in Lignes)
-            {
-                if (ligne.Article.Equals(article))
-                {
-                    ligneASupprimer = ligne;
-                    break;
-                }
-            }
-            if (ligneASupprimer != null)
-            {
-                Lignes.Remove(ligneASupprimer); 
-            }
             // si l'article nest pas présent => ne rien faire
+            Lignes.Remove(article);
         }
 
         public void ViderPanier()
